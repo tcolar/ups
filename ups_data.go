@@ -10,10 +10,12 @@ type TrackResponse struct {
 	Shipment Shipment
 }
 
+// Failed is a shortcut to check if the response is failed or not
 func (r TrackResponse) Failed() bool {
 	return r.Response.ResponseStatusCode != "1"
 }
 
+// TrackingNumber is a shortcut to the tracking number
 func (r TrackResponse) TrackingNumber() string {
 	return r.Shipment.Package.TrackingNumber
 }
