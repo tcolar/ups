@@ -46,7 +46,8 @@ func Dump(resp TrackResponse) {
 	if !resp.Failed() {
 		tracking := resp.TrackingNumber()
 		log.Printf("Tracking Number: %s", tracking)
-		log.Printf("Reference : %s", resp.Shipment.ReferenceNumber)
+		log.Printf("Reference : %s", resp.Shipment[0].ReferenceNumber)
+		log.Print(resp)
 	} else {
 		log.Fatal(resp)
 	}
