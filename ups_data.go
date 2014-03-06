@@ -10,21 +10,29 @@ type TrackResponse struct {
 	Shipment Shipment
 }
 
-type Response struct {
-	TransactionReference TransactionReference
+func (r TrackResponse) Failed() bool {
+	return r.Response.ResponseStatusCode != "1"
 }
 
-type TransactionReference struct {
-	CustomerContext           string
-	TransactionIdentifier     string
-	XpciVersion               string
+func (r TrackResponse) TrackingNumber() string {
+	return r.Shipment.Package.TrackingNumber
+}
+
+type Response struct {
+	TransactionReference      TransactionReference
 	ResponseStatusCode        string
 	ResponseStatusDescription string
 	Error                     Error
 }
 
+type TransactionReference struct {
+	CustomerContext       string
+	TransactionIdentifier string
+	XpciVersion           string
+}
+
 type Shipment struct {
-	InquiryNumber                InquiryNumber
+	InquiryNumber                CodeDescVal
 	ShipmentIdentificationNumber string
 	ShipmentType                 CodeDesc
 	CandidateBookmark            string
@@ -38,6 +46,13 @@ type Shipment struct {
 	DeliveryDetails              DeliveryDetails
 	Volume                       CodeDescVal
 	BillToName                   string
+	// TODO ..... more
+	Package Package
+}
+
+type Package struct {
+	// TODO : more
+	TrackingNumber string
 }
 
 type DeliveryDetails struct {
@@ -55,7 +70,7 @@ type DeliveryDetails struct {
 }
 
 type ShipmentServiceOptions struct {
-	// TODO
+	// TODO : more
 }
 
 type DeliveryDateTime struct {

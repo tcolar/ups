@@ -25,41 +25,36 @@ type Ups struct {
 }
 
 // Return tracking info for a specific UPS tracking number
-func (u Ups) TrackByNumber(trackingNo string) (reply TrackReply, err error) {
+func (u Ups) TrackByNumber(trackingNo string) (reply TrackResponse, err error) {
 	reqXml := xmlNumberTracking(u, trackingNo)
 	content, err := u.PostXml(u.UpsUrl+"/Track", reqXml)
 	if err != nil {
 		return reply, err
 	}
-	log.Printf("%s", content)
 	return u.ParseTrackReply(content)
 }
 
 // Return tracking info for a specific shipper reference
 // ShipperRef is usually an order ID or other unique identifier
-func (u Ups) TrackByShipperRef(shipperRef string) (reply TrackReply, err error) {
+func (u Ups) TrackByShipperRef(shipperRef string) (reply TrackResponse, err error) {
 	reqXml := xmlRefTracking(u, shipperRef)
 	content, err := u.PostXml(u.UpsUrl+"/Track", reqXml)
 	if err != nil {
 		return reply, err
 	}
-	log.Printf("%s", content)
 	return u.ParseTrackReply(content)
 }
 
 // Unmarshal XML response into a TrackReply
-func (u Ups) ParseTrackReply(xmlResp []byte) (reply TrackReply, err error) {
-	data := struct {
-		Reply TrackReply `xml:"Body>TrackReply"`
-	}{}
-	err = xml.Unmarshal(xmlResp, &data)
-	return data.Reply, err
+func (u Ups) ParseTrackReply(xmlResp []byte) (reply TrackResponse, err error) {
+	//log.Printf("%s", xmlResp)
+	resp := TrackResponse{}
+	err = xml.Unmarshal(xmlResp, &resp)
+	return resp, err
 }
 
 // Post Xml to UPS API and return response
 func (u Ups) PostXml(url string, xml string) (content []byte, err error) {
-	log.Print(url)
-	log.Print(xml)
 	resp, err := http.Post(url, "text/xml", strings.NewReader(xml))
 	if err != nil {
 		return content, err
@@ -69,12 +64,14 @@ func (u Ups) PostXml(url string, xml string) (content []byte, err error) {
 }
 
 // Dump some of the query resuts as an example
-func Dump(reply TrackReply) {
+func Dump(resp TrackResponse) {
 	// Dummy example of using the data
-	log.Printf("Successs : %t", !reply.Failed())
-	if !reply.Failed() {
-		tracking := reply.CompletedTrackDetails[0].TrackDetails[0].TrackingNumber
+	log.Printf("Successs : %t", !resp.Failed())
+	if !resp.Failed() {
+		tracking := resp.TrackingNumber()
 		log.Printf("Tracking Number: %s", tracking)
-		log.Print(reply.CompletedTrackDetails[0].TrackDetails[0].ActualDeliveryAddress)
+		log.Printf("Reference : %s", resp.Shipment.ReferenceNumber)
+	} else {
+		log.Fatal(resp)
 	}
 }
