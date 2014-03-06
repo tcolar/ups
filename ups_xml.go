@@ -1,4 +1,4 @@
-// History: Nov 20 13 tcolar Creation
+// History: Mar 5 2014 tcolar Creation
 
 package ups
 
@@ -12,7 +12,7 @@ import (
 func xmlNumberTracking(u Ups, trackingNo string) string {
 	return xmlHead(u) +
 		fmt.Sprintf(`
-    <TrackRequest xml:lang="en-US">
+<TrackRequest xml:lang="en-US">
  <Request>
    <TransactionReference>
      <CustomerContext>Test</CustomerContext>
@@ -29,7 +29,7 @@ func xmlNumberTracking(u Ups, trackingNo string) string {
 func xmlRefTracking(u Ups, ref string) string {
 	return xmlHead(u) +
 		fmt.Sprintf(`
-    <TrackRequest xml:lang="en-US">
+<TrackRequest xml:lang="en-US">
  <Request>
    <TransactionReference>
      <CustomerContext>Test</CustomerContext>

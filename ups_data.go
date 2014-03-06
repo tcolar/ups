@@ -1,10 +1,10 @@
-// History: Nov 20 13 tcolar Creation
+// History: Mar 5 2014 tcolar Creation
 package ups
 
 // Structures to unmarshall the Ups Xml answer into
 // See specs here: https://www.ups.com/upsdeveloperkit/downloadresource?loc=en_US
 
-// Track reply (root) (xml:"TrackResponse")
+// TrackResponse : Track reply (root) (xml:"TrackResponse")
 type TrackResponse struct {
 	Response Response
 	Shipment Shipment

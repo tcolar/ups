@@ -1,12 +1,11 @@
-// History: Nov 20 13 tcolar Creation
+// History: Mar 5 2014 tcolar Creation
 
-// ups provides access to some UPS XML api's
+// ups provides access to (some) UPS XML API's and unmarshall answers into Go structures
 package ups
 
 import (
 	"encoding/xml"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -18,13 +17,13 @@ const (
 	UPS_TEST_TRACKING = "1Z12345E1512345676"
 )
 
-// Utility to retrieve data from Ups XML API
+// Ups : Utility to retrieve data from Ups XML API
 type Ups struct {
 	LicenseNumber, AccountNumber, Login, Password string
 	UpsUrl                                        string
 }
 
-// Return tracking info for a specific UPS tracking number
+// TrackByNumber : Returns tracking info for a specific UPS tracking number
 func (u Ups) TrackByNumber(trackingNo string) (reply TrackResponse, err error) {
 	reqXml := xmlNumberTracking(u, trackingNo)
 	content, err := u.PostXml(u.UpsUrl+"/Track", reqXml)
@@ -34,7 +33,7 @@ func (u Ups) TrackByNumber(trackingNo string) (reply TrackResponse, err error) {
 	return u.ParseTrackReply(content)
 }
 
-// Return tracking info for a specific shipper reference
+// TrackByShipperRef : Returns tracking info for a specific shipper reference
 // ShipperRef is usually an order ID or other unique identifier
 func (u Ups) TrackByShipperRef(shipperRef string) (reply TrackResponse, err error) {
 	reqXml := xmlRefTracking(u, shipperRef)
@@ -53,7 +52,7 @@ func (u Ups) ParseTrackReply(xmlResp []byte) (reply TrackResponse, err error) {
 	return resp, err
 }
 
-// Post Xml to UPS API and return response
+// PostXml : Posts Xml to UPS API and return response
 func (u Ups) PostXml(url string, xml string) (content []byte, err error) {
 	resp, err := http.Post(url, "text/xml", strings.NewReader(xml))
 	if err != nil {
@@ -61,17 +60,4 @@ func (u Ups) PostXml(url string, xml string) (content []byte, err error) {
 	}
 	defer resp.Body.Close()
 	return ioutil.ReadAll(resp.Body)
-}
-
-// Dump some of the query resuts as an example
-func Dump(resp TrackResponse) {
-	// Dummy example of using the data
-	log.Printf("Successs : %t", !resp.Failed())
-	if !resp.Failed() {
-		tracking := resp.TrackingNumber()
-		log.Printf("Tracking Number: %s", tracking)
-		log.Printf("Reference : %s", resp.Shipment.ReferenceNumber)
-	} else {
-		log.Fatal(resp)
-	}
 }
